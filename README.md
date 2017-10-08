@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/bkinsey808/ng-single-iframe-upgrade.svg?branch=master)](https://travis-ci.org/bkinsey808/ng-single-iframe-upgrade)
 >Upgrade your AngularJS app to Angular the easy way: just put your legacy app in an iframe!
 
-This technique was inspired by https://github.com/jawache/alt-angularjs-migration-using-iframes-demo and a lot of what he says are advantages for using his project should also apply to this project as well. But that project has a big perf problem if your AngularJS app is slow to bootstrap. Each legacy route change in that project causes the iframe to refresh. This project in contrast keeps the iframe always open, and visible or not depending on the route.
+This technique was inspired by https://github.com/jawache/alt-angularjs-migration-using-iframes-demo by Asim Hussein and a lot of what he says are advantages for using his project should also apply to this project as well. But that project has a big perf problem if your AngularJS app is slow to bootstrap. Each legacy route change in that project causes the iframe to refresh. This project in contrast keeps the iframe always open, and visible or not depending on the route.
 
 ng-single-iframe-upgrade is appropriate if you don't feel like refactoring your AngularJS code (or can't for various reasons including third party libs that don't exists in Angular), and you would rather just let it be. 
 This is sort of the opposite of the ngUpgrade slow refactoring approach, where you have to port your code to typescript, make it componentized, etc, and then figure out how to get Angular components inside AngularJS components and vice versa. This approach does not do that. You are either in an AngularJS legacy route, or you are in a modern Angular route, and that determines whether the iframe is visible or not. 
@@ -17,8 +17,6 @@ I solve this with AngularJS communicating to the parent Angular via postMessage.
 This library contains a component and a service to be able to interact with your legacy
 AngularJS app from within your Angular app.
 
-The structure of this project is very closely derived from https://github.com/robisim74/angular-library-starter 
-
 This project is alpha quality, and very experimental. I hope to put it into production eventually, but have not yet. I am open to ideas for how this technique could be improved. Let me know, thanks!
 
 An example that demonstrates this project is under development.
@@ -26,6 +24,8 @@ An example that demonstrates this project is under development.
 Requires **Angular 4+** 
 
 Get the [Changelog](https://github.com/bkinsey808/ng-single-iframe-upgrade/blob/master/CHANGELOG.md).
+
+The structure of this project is very closely derived from https://github.com/robisim74/angular-library-starter by Roberto Simonetti.
 
 ## Contents
 * [1 Project structure](#1)
