@@ -15,11 +15,9 @@ import { interval } from 'rxjs/observable/interval'
 import { NgSingleIframeUpgradeService } from '../services/ng-single-iframe-upgrade.service'
 
 @Component({
-  // tslint:disable-next-line
-  selector: 'ng-siu',
+  selector: 'ngsiu-cmp',
   template: `
     <iframe #iframe
-      id="myIframe"
       [attr.src]="url"
       [style.height.px]="height$ | async"
     ></iframe>
