@@ -28,17 +28,17 @@ export class NgSingleIframeUpgradeService {
 
   iframeElementRef: ElementRef
 
-  private static setDisplayLegacyBase(base: string) {
+  static setDisplayLegacyBase(base: string) {
     this.displayLegacyBase = base
   }
-  private static getDisplayLegacyBase() {
+  static getDisplayLegacyBase() {
     return this.displayLegacyBase
   }
 
-  private static setActualLegacyBase(base: string) {
+  static setActualLegacyBase(base: string) {
     this.actualLegacyBase = base
   }
-  private static getActualLegacyBase() {
+  static getActualLegacyBase() {
     return this.actualLegacyBase
   }
 
