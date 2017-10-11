@@ -68,7 +68,7 @@ export class NgSingleIframeUpgradeService {
       : this.updateDisplayUrl()
   }
 
-  switchToAngularMode(url: string | null) {
+  switchToAngularMode(url?: string) {
     if (url) {
       this.router.navigateByUrl(url)
     }
@@ -147,6 +147,9 @@ export class NgSingleIframeUpgradeService {
   private handleUrlChange(data: any) {
     // At first I was concerned URL would not be available for IE 11, but
     // maybe core-js handles this? Seems to be working...
+    if (!this.showIframe$.value) {
+      return
+    }
     const url = new URL(data.url)
     const pathname = url.pathname
     const displayUrl = this.getAngularJsDisplayUrl(pathname)
