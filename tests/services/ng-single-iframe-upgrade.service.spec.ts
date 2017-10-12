@@ -12,11 +12,27 @@ describe('NgSingleIframeUpgradeService', () => {
   })
 
   it(
-    'should be calculate the sum',
+    'should set the legacy base',
     inject(
       [NgSingleIframeUpgradeService],
-      (sumService: NgSingleIframeUpgradeService) => {
-        expect(1).toEqual(1)
+      (simpleUpgradeService: NgSingleIframeUpgradeService) => {
+        NgSingleIframeUpgradeService.setDisplayLegacyBase('legacy')
+        expect(NgSingleIframeUpgradeService.getDisplayLegacyBase()).toEqual(
+          'legacy'
+        )
+      }
+    )
+  )
+
+  it(
+    'should identify legacy url',
+    inject(
+      [NgSingleIframeUpgradeService],
+      (simpleIframeUpgrade: NgSingleIframeUpgradeService) => {
+        NgSingleIframeUpgradeService.setDisplayLegacyBase('legacy')
+        expect(simpleIframeUpgrade.isLegacyUrl('/legacy/dashboard')).toEqual(
+          true
+        )
       }
     )
   )

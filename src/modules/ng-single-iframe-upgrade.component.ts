@@ -60,7 +60,7 @@ export class NgSingleIframeUpgradeComponent implements OnInit {
   }
 
   private keepIframeUrlUpdated() {
-    this.ngSingleIframeUpgradeService.angularJsActualUrl$
+    this.ngSingleIframeUpgradeService.legacyActualUrl$
       // this filter ensures we do not trigger the iframe to refresh and bootstrap
       .filter((url: string) => {
         return url !== this.iframe.nativeElement.contentWindow.location.pathname
@@ -77,7 +77,7 @@ export class NgSingleIframeUpgradeComponent implements OnInit {
   private keepIframeHeightUpdated() {
     const contentObservable$ = interval(50)
       // only bother to resize if angularJs iframe is visible
-      .filter(x => this.ngSingleIframeUpgradeService.showIframe$.value)
+      .filter(x => this.ngSingleIframeUpgradeService.isLegacyMode$.value)
       // get the iframe document
       .map(x => this.iframe.nativeElement.contentWindow.document)
       // make sure iframe document exists

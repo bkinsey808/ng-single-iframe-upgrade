@@ -15,18 +15,20 @@ export class NgSingleIframeUpgradeService {
   private static forceUpgradeUrls: string
 
   // consider moving these behavior subjects into rxjs/store
-  showIframe$: BehaviorSubject<boolean> = new BehaviorSubject(false)
+  isLegacyMode$: BehaviorSubject<boolean> = new BehaviorSubject(false)
   angularUrl$: BehaviorSubject<string> = new BehaviorSubject('/')
-  angularJsDisplayUrl$: BehaviorSubject<string> = new BehaviorSubject(
+  legacyDisplayUrl$: BehaviorSubject<string> = new BehaviorSubject(
     `/${NgSingleIframeUpgradeService.displayLegacyBase}`
   )
 
-  // read only, derivative from angularJsDisplayUrl$
-  angularJsActualUrl$: Observable<string>
+  // read only, derivative from legacyDisplayUrl$
+  legacyActualUrl$: Observable<string>
 
   showModalBackdrop$: BehaviorSubject<boolean> = new BehaviorSubject(false)
 
   iframeElementRef: ElementRef
+
+  private isLoggedInMethod: Function
 
   static setDisplayLegacyBase(base: string) {
     this.displayLegacyBase = base
@@ -43,9 +45,9 @@ export class NgSingleIframeUpgradeService {
   }
 
   constructor(@Inject(Router) private router: Router) {
-    this.angularJsActualUrl$ = this.angularJsDisplayUrl$
+    this.legacyActualUrl$ = this.legacyDisplayUrl$
       .asObservable()
-      .map(url => this.getAngularJsActualUrl(url))
+      .map(url => this.getLegacyActualUrl(url))
       .distinctUntilChanged()
 
     // why is HostListener not available in a serice? Boo. :(
@@ -53,7 +55,7 @@ export class NgSingleIframeUpgradeService {
     window.addEventListener('message', this.onMessage.bind(this), false)
   }
 
-  setAngularUrl(url: string) {
+  setModernUrl(url: string) {
     this.angularUrl$.next(url)
   }
 
@@ -61,27 +63,32 @@ export class NgSingleIframeUpgradeService {
     this.iframeElementRef = elementRef
   }
 
-  switchToAngularJsMode(url: string) {
-    this.showIframe$.next(true)
-    url && this.differentUrl(url)
-      ? this.iframeChangeUrl(url)
-      : this.updateDisplayUrl()
+  switchToLegacyMode(url: string) {
+    if (!this.isLoggedInMethod()) {
+      return
+    }
+    this.isLegacyMode$.next(true)
+    if (url && this.differentUrl(url)) {
+      this.iframeChangeUrl(url)
+    } else {
+      this.updateDisplayUrl()
+    }
   }
 
-  switchToAngularMode(url?: string) {
+  switchToModernMode(url?: string) {
     if (url) {
       this.router.navigateByUrl(url)
     }
-    this.showIframe$.next(false)
+    this.isLegacyMode$.next(false)
     this.updateDisplayUrl()
   }
 
-  setAngularJsUrl(url: string) {
-    url = this.getAngularJsDisplayUrl(url)
-    this.angularJsDisplayUrl$.next(url)
+  setLegacyUrl(url: string) {
+    url = this.getLegacyDisplayUrl(url)
+    this.legacyDisplayUrl$.next(url)
   }
 
-  getAngularJsDisplayUrl(url: string) {
+  getLegacyDisplayUrl(url: string) {
     if (!url || url === '/') {
       return `/${NgSingleIframeUpgradeService.displayLegacyBase}`
     }
@@ -91,9 +98,28 @@ export class NgSingleIframeUpgradeService {
     )
   }
 
+  navigateByUrl(url: string) {
+    if (this.isLegacyUrl(url)) {
+      this.switchToLegacyMode(url)
+    } else {
+      this.switchToModernMode(url)
+    }
+  }
+
+  isLegacyUrl(url: string) {
+    const regexp = new RegExp(
+      `^/${NgSingleIframeUpgradeService.displayLegacyBase}`
+    )
+    return url.search(regexp) !== -1
+  }
+
+  setIsLoggedInMethod(method: Function) {
+    this.isLoggedInMethod = method
+  }
+
   private differentUrl(url: string) {
     return (
-      this.angularJsDisplayUrl$.value !==
+      this.legacyDisplayUrl$.value !==
       `/${NgSingleIframeUpgradeService.displayLegacyBase}` + url
     )
   }
@@ -101,13 +127,13 @@ export class NgSingleIframeUpgradeService {
   private iframeChangeUrl(url: string) {
     this.iframeElementRef.nativeElement.contentWindow.postMessage(
       {
-        changeUrl: `/${NgSingleIframeUpgradeService.actualLegacyBase}` + url
+        changeUrl: this.getLegacyActualUrl(url)
       },
       '*'
     )
   }
 
-  private getAngularJsActualUrl(url: string) {
+  private getLegacyActualUrl(url: string) {
     url = url.replace(
       new RegExp(`^/${NgSingleIframeUpgradeService.displayLegacyBase}`),
       `/${NgSingleIframeUpgradeService.actualLegacyBase}`
@@ -119,8 +145,8 @@ export class NgSingleIframeUpgradeService {
   }
 
   private updateDisplayUrl() {
-    const url = this.showIframe$.value
-      ? this.angularJsDisplayUrl$.value
+    const url = this.isLegacyMode$.value
+      ? this.legacyDisplayUrl$.value
       : this.angularUrl$.value
     if (window) {
       window.history.pushState(null, '', url)
@@ -147,13 +173,16 @@ export class NgSingleIframeUpgradeService {
   private handleUrlChange(data: any) {
     // At first I was concerned URL would not be available for IE 11, but
     // maybe core-js handles this? Seems to be working...
-    if (!this.showIframe$.value) {
+    if (!this.isLoggedInMethod()) {
+      return
+    }
+    if (!this.isLegacyMode$.value) {
       return
     }
     const url = new URL(data.url)
     const pathname = url.pathname
-    const displayUrl = this.getAngularJsDisplayUrl(pathname)
-    this.angularJsDisplayUrl$.next(displayUrl)
+    const displayUrl = this.getLegacyDisplayUrl(pathname)
+    this.legacyDisplayUrl$.next(displayUrl)
     this.updateDisplayUrl()
   }
 
