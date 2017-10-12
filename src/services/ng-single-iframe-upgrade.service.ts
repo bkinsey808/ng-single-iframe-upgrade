@@ -28,6 +28,8 @@ export class NgSingleIframeUpgradeService {
 
   iframeElementRef: ElementRef
 
+  private delaySwitchToLegacyMode = false
+
   private isLoggedInMethod: Function
 
   static setDisplayLegacyBase(base: string) {
@@ -63,11 +65,14 @@ export class NgSingleIframeUpgradeService {
     this.iframeElementRef = elementRef
   }
 
+  // tslint:disable-next-line
   switchToLegacyMode(url: string) {
     if (!this.isLoggedInMethod()) {
       return
     }
-    this.isLegacyMode$.next(true)
+    if (!this.isLegacyMode$.value) {
+      this.delaySwitchToLegacyMode = true
+    }
     if (url && this.differentUrl(url)) {
       this.iframeChangeUrl(url)
     } else {
@@ -176,8 +181,9 @@ export class NgSingleIframeUpgradeService {
     if (!this.isLoggedInMethod()) {
       return
     }
-    if (!this.isLegacyMode$.value) {
-      return
+    if (this.delaySwitchToLegacyMode) {
+      this.delaySwitchToLegacyMode = false
+      this.isLegacyMode$.next(true)
     }
     const url = new URL(data.url)
     const pathname = url.pathname
