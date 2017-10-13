@@ -107,7 +107,7 @@ export class NgSingleIframeUpgradeService {
       } else {
         this.isLegacyMode$.next(true)
         if (window) {
-          window.history.pushState(null, '', legacyDisplayUrl)
+          window.history.replaceState(null, '', legacyDisplayUrl)
         }
       }
     } else {
