@@ -18,6 +18,7 @@ import { NgSingleIframeUpgradeService } from '../services/ng-single-iframe-upgra
   selector: 'ngsiu-cmp',
   template: `
     <iframe #iframe
+      sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
       [attr.src]="url"
       [style.height.px]="height$ | async"
     ></iframe>

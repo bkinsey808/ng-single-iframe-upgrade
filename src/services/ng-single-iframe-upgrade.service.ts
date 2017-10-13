@@ -31,6 +31,7 @@ export class NgSingleIframeUpgradeService {
   private delaySwitchToLegacyMode = false
 
   private isLoggedInMethod: Function
+  private routerNavigateMethod: Function
 
   static setDisplayLegacyBase(base: string) {
     this.displayLegacyBase = base
@@ -65,27 +66,62 @@ export class NgSingleIframeUpgradeService {
     this.iframeElementRef = elementRef
   }
 
+  getBaselessUrl(url: string) {
+    url = url.replace(
+      new RegExp(`^/${NgSingleIframeUpgradeService.actualLegacyBase}`),
+      ''
+    )
+    url = url.replace(
+      new RegExp(`^/${NgSingleIframeUpgradeService.displayLegacyBase}`),
+      ''
+    )
+    return url
+  }
+
   // tslint:disable-next-line
-  switchToLegacyMode(url: string) {
+  switchToLegacyMode(url?: string, dontNavigateBack: boolean = false) {
     if (!this.isLoggedInMethod()) {
       return
     }
-    if (!this.isLegacyMode$.value) {
-      this.delaySwitchToLegacyMode = true
-    }
-    if (url && this.differentUrl(url)) {
-      this.iframeChangeUrl(url)
+    if (url) {
+      const legacyDisplayUrl = this.getLegacyDisplayUrl(url)
+      // if (window.location.pathname === legacyDisplayUrl) {
+      //   this.isLegacyMode$.next(true)
+      //   return
+      // } else
+      if (!this.isLegacyMode$.value) {
+        this.delaySwitchToLegacyMode = true
+      }
+
+      const baselessUrl = this.getBaselessUrl(url)
+      console.log('baselessurl: ', baselessUrl)
+      if (this.differentUrl(baselessUrl)) {
+        console.log('iframe url: ', url)
+        this.iframeChangeUrl(url)
+        if (
+          !dontNavigateBack &&
+          window.location.pathname !== legacyDisplayUrl
+        ) {
+          this.routerNavigateMethod(legacyDisplayUrl)
+        }
+      } else {
+        this.isLegacyMode$.next(true)
+        if (window) {
+          window.history.pushState(null, '', legacyDisplayUrl)
+        }
+      }
     } else {
-      this.updateDisplayUrl()
+      if (window) {
+        window.history.pushState(null, '', this.legacyDisplayUrl$.value)
+      }
     }
   }
 
   switchToModernMode(url?: string) {
     if (url) {
-      this.router.navigateByUrl(url)
+      this.routerNavigateMethod(url)
     }
     this.isLegacyMode$.next(false)
-    this.updateDisplayUrl()
   }
 
   setLegacyUrl(url: string) {
@@ -103,9 +139,9 @@ export class NgSingleIframeUpgradeService {
     )
   }
 
-  navigateByUrl(url: string) {
+  navigateByUrl(url: string, dontNavigateBack: boolean = false) {
     if (this.isLegacyUrl(url)) {
-      this.switchToLegacyMode(url)
+      this.switchToLegacyMode(url, dontNavigateBack)
     } else {
       this.switchToModernMode(url)
     }
@@ -122,10 +158,14 @@ export class NgSingleIframeUpgradeService {
     this.isLoggedInMethod = method
   }
 
-  private differentUrl(url: string) {
+  setRouterNavigateMethod(method: Function) {
+    this.routerNavigateMethod = method
+  }
+
+  private differentUrl(baselessUrl: string) {
     return (
       this.legacyDisplayUrl$.value !==
-      `/${NgSingleIframeUpgradeService.displayLegacyBase}` + url
+      `/${NgSingleIframeUpgradeService.displayLegacyBase}` + baselessUrl
     )
   }
 
@@ -149,14 +189,17 @@ export class NgSingleIframeUpgradeService {
     return url
   }
 
-  private updateDisplayUrl() {
-    const url = this.isLegacyMode$.value
-      ? this.legacyDisplayUrl$.value
-      : this.angularUrl$.value
-    if (window) {
-      window.history.pushState(null, '', url)
-    }
-  }
+  // private updateDisplayUrl(useReplaceState: boolean = false) {
+  //   const url = this.isLegacyMode$.value
+  //     ? this.legacyDisplayUrl$.value
+  //     : this.angularUrl$.value
+  //   if (window && window.location.pathname !== url) {
+  //     console.log(window.location.pathname, url)
+  //     console.trace()
+  //     const stateMethod = useReplaceState ? 'replaceState' : 'pushState'
+  //     window.history[stateMethod](null, '', url)
+  //   }
+  // }
 
   // tslint:disable-next-line
   private onMessage(event: any) {
@@ -188,8 +231,14 @@ export class NgSingleIframeUpgradeService {
     const url = new URL(data.url)
     const pathname = url.pathname
     const displayUrl = this.getLegacyDisplayUrl(pathname)
+    if (displayUrl === '/legacy/' || displayUrl === '/legacy/dashboard') {
+      return
+    }
     this.legacyDisplayUrl$.next(displayUrl)
-    this.updateDisplayUrl()
+    if (this.isLegacyMode$.value) {
+      console.log('handle url change', displayUrl)
+      this.routerNavigateMethod(displayUrl)
+    }
   }
 
   // tslint:disable-next-line
