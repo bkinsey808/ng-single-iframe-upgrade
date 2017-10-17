@@ -12,10 +12,12 @@ import { CommonModule } from '@angular/common'
 import { Observable } from 'rxjs/Observable'
 import { interval } from 'rxjs/observable/interval'
 
-import { NgSingleIframeUpgradeService } from '../services/ng-single-iframe-upgrade.service'
+import { LegacyRoutingService } from '../services/legacy-routing.service'
+import { IframeMessagesService } from '../services/iframe-messages.service'
 
+/** the iframe component that contains the legacy app */
 @Component({
-  selector: 'ngsiu-cmp',
+  selector: 'bk-legacy-routing',
   template: `
     <iframe #iframe
       sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
@@ -38,7 +40,7 @@ import { NgSingleIframeUpgradeService } from '../services/ng-single-iframe-upgra
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NgSingleIframeUpgradeComponent implements OnInit {
+export class LegacyRoutingComponent implements OnInit {
   @ViewChild('iframe') iframe: ElementRef
 
   // iframe url
@@ -48,7 +50,8 @@ export class NgSingleIframeUpgradeComponent implements OnInit {
   height$: Observable<number>
 
   constructor(
-    public ngSingleIframeUpgradeService: NgSingleIframeUpgradeService,
+    public legacyRouting: LegacyRoutingService,
+    private iframeMessages: IframeMessagesService,
     private sanitizer: DomSanitizer,
     private changeDetectorRef: ChangeDetectorRef,
     private elementRef: ElementRef
@@ -56,16 +59,13 @@ export class NgSingleIframeUpgradeComponent implements OnInit {
 
   ngOnInit() {
     this.keepIframeUrlUpdated()
-    this.keepIframeHeightUpdated()
-    this.ngSingleIframeUpgradeService.setIframeElementRef(this.iframe)
+    // this.keepIframeHeightUpdated()
+    this.legacyRouting.setIframeElementRef(this.iframe)
+    this.iframeMessages.setIframeElementRef(this.iframe)
   }
 
   private keepIframeUrlUpdated() {
-    this.ngSingleIframeUpgradeService.legacyActualUrl$
-      // this filter ensures we do not trigger the iframe to refresh and bootstrap
-      .filter((url: string) => {
-        return url !== this.iframe.nativeElement.contentWindow.location.pathname
-      })
+    this.legacyRouting.legacyUrl$
       // what are security implications of this? Something to think about.
       // We should probably figure out how to prevent url attacks from angularJs somehow.
       .map((url: string) => this.sanitizer.bypassSecurityTrustResourceUrl(url))
@@ -78,9 +78,9 @@ export class NgSingleIframeUpgradeComponent implements OnInit {
   private keepIframeHeightUpdated() {
     const contentObservable$ = interval(50)
       // only bother to resize if angularJs iframe is visible
-      .filter(x => this.ngSingleIframeUpgradeService.isLegacyMode$.value)
+      .filter(() => this.legacyRouting.isLegacyMode())
       // get the iframe document
-      .map(x => this.iframe.nativeElement.contentWindow.document)
+      .map(() => this.iframe.nativeElement.contentWindow.document)
       // make sure iframe document exists
       .filter(iframeDocument => !!iframeDocument)
       // the #content div is the div in angularJs that is sized to fit content

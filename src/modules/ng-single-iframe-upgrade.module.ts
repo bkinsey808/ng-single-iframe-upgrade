@@ -2,17 +2,18 @@ import { NgModule, ModuleWithProviders } from '@angular/core'
 import { Router } from '@angular/router'
 import { CommonModule } from '@angular/common'
 
-import { NgSingleIframeUpgradeService } from '../services/ng-single-iframe-upgrade.service'
-import { NgSingleIframeUpgradeComponent } from './ng-single-iframe-upgrade.component'
+import { LegacyRoutingService } from '../services/legacy-routing.service'
+import { IframeMessagesService } from '../services/iframe-messages.service'
+import { LegacyRoutingComponent } from './legacy-routing.component'
 
 @NgModule({
   declarations: [
-    NgSingleIframeUpgradeComponent
+    LegacyRoutingComponent
     // Pipes.
     // Directives.
   ],
   exports: [
-    NgSingleIframeUpgradeComponent,
+    LegacyRoutingComponent,
     CommonModule
     // Pipes.
     // Directives.
@@ -21,12 +22,12 @@ import { NgSingleIframeUpgradeComponent } from './ng-single-iframe-upgrade.compo
 })
 export class NgSingleIframeUpgradeModule {
   /**
-     * Use in AppModule: new instance of NgSingleIframeUpgradeService.
-     */
+   *  Use in AppModule: new instance of LegacyRoutingService.
+   */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: NgSingleIframeUpgradeModule,
-      providers: [NgSingleIframeUpgradeService, Router]
+      providers: [LegacyRoutingService, IframeMessagesService, Router]
     }
   }
 
@@ -36,7 +37,7 @@ export class NgSingleIframeUpgradeModule {
   static forChild(): ModuleWithProviders {
     return {
       ngModule: NgSingleIframeUpgradeModule,
-      providers: [NgSingleIframeUpgradeService]
+      providers: [LegacyRoutingService, IframeMessagesService, Router]
     }
   }
 }
