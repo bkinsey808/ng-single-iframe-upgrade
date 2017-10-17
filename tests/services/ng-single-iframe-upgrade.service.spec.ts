@@ -1,25 +1,24 @@
 import { inject, TestBed } from '@angular/core/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 
-import { NgSingleIframeUpgradeService } from './../../ng-single-iframe-upgrade'
+import { LegacyRoutingService } from './../../src/services/legacy-routing.service'
+import { IframeMessagesService } from './../../src/services/iframe-messages.service'
 
-describe('NgSingleIframeUpgradeService', () => {
+describe('LegacyRoutingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [NgSingleIframeUpgradeService]
+      providers: [LegacyRoutingService, IframeMessagesService]
     })
   })
 
   it(
     'should set the legacy base',
     inject(
-      [NgSingleIframeUpgradeService],
-      (simpleUpgradeService: NgSingleIframeUpgradeService) => {
-        NgSingleIframeUpgradeService.setDisplayLegacyBase('legacy')
-        expect(NgSingleIframeUpgradeService.getDisplayLegacyBase()).toEqual(
-          'legacy'
-        )
+      [LegacyRoutingService],
+      (simpleUpgradeService: LegacyRoutingService) => {
+        LegacyRoutingService.setDisplayLegacyBase('legacy')
+        expect(LegacyRoutingService.getDisplayLegacyBase()).toEqual('legacy')
       }
     )
   )
@@ -27,9 +26,9 @@ describe('NgSingleIframeUpgradeService', () => {
   it(
     'should identify legacy url',
     inject(
-      [NgSingleIframeUpgradeService],
-      (simpleIframeUpgrade: NgSingleIframeUpgradeService) => {
-        NgSingleIframeUpgradeService.setDisplayLegacyBase('legacy')
+      [LegacyRoutingService],
+      (simpleIframeUpgrade: LegacyRoutingService) => {
+        LegacyRoutingService.setDisplayLegacyBase('legacy')
         expect(simpleIframeUpgrade.isLegacyUrl('/legacy/dashboard')).toEqual(
           true
         )
