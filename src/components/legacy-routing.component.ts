@@ -3,23 +3,23 @@ import {
   OnInit,
   ViewChild,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   ElementRef
 } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
-import { CommonModule } from '@angular/common'
 
 import { Observable } from 'rxjs/Observable'
 import { interval } from 'rxjs/observable/interval'
 
 import { LegacyRoutingService } from '../services/legacy-routing.service'
 import { IframeMessagesService } from '../services/iframe-messages.service'
+import { filter, map, distinctUntilChanged } from 'rxjs/operators'
 
 /** the iframe component that contains the legacy app */
 @Component({
-  selector: 'bk-legacy-routing',
+  selector: 'bkng-legacy-routing',
   template: `
     <iframe #iframe
+      id="iframe"
       sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
       [attr.src]="url"
       [style.height.px]="height$ | async"
@@ -52,48 +52,42 @@ export class LegacyRoutingComponent implements OnInit {
   constructor(
     public legacyRouting: LegacyRoutingService,
     private iframeMessages: IframeMessagesService,
-    private sanitizer: DomSanitizer,
-    private changeDetectorRef: ChangeDetectorRef,
-    private elementRef: ElementRef
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     this.keepIframeUrlUpdated()
-    // this.keepIframeHeightUpdated()
+    this.keepIframeHeightUpdated()
     this.legacyRouting.setIframeElementRef(this.iframe)
     this.iframeMessages.setIframeElementRef(this.iframe)
   }
 
   private keepIframeUrlUpdated() {
-    this.legacyRouting.legacyUrl$
-      // what are security implications of this? Something to think about.
-      // We should probably figure out how to prevent url attacks from angularJs somehow.
-      .map((url: string) => this.sanitizer.bypassSecurityTrustResourceUrl(url))
-      .subscribe((url: string) => {
-        this.url = url
-        this.changeDetectorRef.markForCheck()
-      })
+    // what are security implications of this? Something to think about.
+    // We should probably figure out how to prevent url attacks from angularJs somehow.
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(
+      this.legacyRouting.getCurrentLegacyUrl()
+    )
   }
 
   private keepIframeHeightUpdated() {
-    const contentObservable$ = interval(50)
+    const contentObservable$ = interval(50).pipe(
       // only bother to resize if angularJs iframe is visible
-      .filter(() => this.legacyRouting.isLegacyMode())
+      filter(() => this.legacyRouting.isLegacyMode()),
       // get the iframe document
-      .map(() => this.iframe.nativeElement.contentWindow.document)
+      map(() => this.iframe.nativeElement.contentWindow.document),
       // make sure iframe document exists
-      .filter(iframeDocument => !!iframeDocument)
+      filter(iframeDocument => !!iframeDocument),
       // the #content div is the div in angularJs that is sized to fit content
-      .map(iframeDocument => iframeDocument.querySelector('#content'))
+      map(iframeDocument => iframeDocument.querySelector('#content')),
       // make sure content exists
-      .filter(content => !!content)
+      filter(content => !!content)
+    )
 
-    // see https://codepen.io/sambible/post/browser-scrollbar-widths
-    const scrollBarPixels = 17
-
-    this.height$ = contentObservable$
+    this.height$ = contentObservable$.pipe(
       // we don't ever want to see a vertical scrollbar just because a horizontal scrollbar exists
-      .map(content => content.clientHeight + scrollBarPixels)
-      .distinctUntilChanged()
+      map(content => content.clientHeight),
+      distinctUntilChanged()
+    )
   }
 }

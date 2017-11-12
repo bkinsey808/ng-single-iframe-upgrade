@@ -29,7 +29,6 @@
     "no-debugger": true,
     "no-duplicate-super": true,
     "no-empty": false,
-    "no-empty-interface": true,
     "no-eval": true,
     "no-inferrable-types": [true, "ignore-params"],
     "no-misused-new": true,
@@ -40,6 +39,7 @@
     "no-switch-case-fall-through": true,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
+    "no-unused-variable": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
@@ -50,8 +50,8 @@
     "typeof-compare": true,
     "unified-signatures": true,
     "variable-name": false,
-    "directive-selector": [true, "attribute", "bk", "camelCase"],
-    "component-selector": [true, "element", "bk", "kebab-case"],
+    "directive-selector": [true, "attribute", "bkng", "camelCase"],
+    "component-selector": [true, "element", "bkng", "kebab-case"],
     "use-input-property-decorator": true,
     "use-output-property-decorator": true,
     "use-host-property-decorator": true,
@@ -64,8 +64,9 @@
     "no-access-missing-member": true,
     "templates-use-public": true,
     "invoke-injectable": true,
-    "cyclomatic-complexity": [true, 4],
+    "cyclomatic-complexity": [true, 5],
     "adjacent-overload-signatures": true,
-    "no-any": true
+    "no-any": true,
+    "no-null-keyword": true
   }
 }
