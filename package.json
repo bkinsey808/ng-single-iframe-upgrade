@@ -1,6 +1,6 @@
 {
   "name": "ng-single-iframe-upgrade",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description":
     "Upgrade your AngularJS app to Angular the easy(?) way: just put your legacy app in an iframe!",
   "main": "./dist/index.umd.js",

@@ -1,0 +1,38 @@
+{
+  "name": "ui-router-architecture",
+  "description": "Architecture overview demo for Angular UI-Router",
+  "version": "1.0.2",
+  "scripts": {
+    "start": "webpack-dev-server --progress --open",
+    "build": "webpack --progress",
+    "gh-pages": "git checkout gh-pages && git rebase master && rm -rf node_modules && yarn install && webpack && git add -f _bundles && git commit -m 'publish gh-pages' && git push origin gh-pages:gh-pages --force && git checkout master"
+  },
+  "contributors": [
+    {
+      "name": "Chris Thielen",
+      "web": "https://github.com/christopherthielen"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui-router/sample-app.git"
+  },
+  "dependencies": {
+    "@uirouter/angularjs": "1.0.10",
+    "@uirouter/dsr": "^1.0.0",
+    "@uirouter/sticky-states": "^1.3.0",
+    "@uirouter/visualizer": "5.0.0",
+    "angular": "<2",
+    "oclazyload": "^1.1.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2015-ie": "^6.7.0",
+    "source-map-loader": "^0.2.1",
+    "webpack": "^2.6.0",
+    "webpack-dev-server": "2.9.3"
+  }
+}

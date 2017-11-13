@@ -16,6 +16,7 @@ import { IframeMessagesService } from './iframe-messages.service'
 export interface LegacyRoutingConfig {
   actualLegacyBase: string
   displayLegacyBase: string
+  legacyStartPath?: string
 }
 
 /**
@@ -167,7 +168,10 @@ export class LegacyRoutingService implements OnDestroy {
     if (this.isLegacyUrl(displayUrl)) {
       return this.getActualUrl(displayUrl)
     }
-    return `/${this.getActualLegacyBase()}/dashboard`
+    return (
+      `/${this.getActualLegacyBase()}` +
+      (this.config.legacyStartPath ? `/${this.config.legacyStartPath}` : '')
+    )
   }
 
   private getModernUrl$(): Observable<string> {
