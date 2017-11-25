@@ -61,3 +61,5 @@ https://github.com/trekhleb/angular-library-seed
 ## Demo Server
 
 To run the demo server, `cd demo` and `npm i` and `npm start`
+
+## Questions, comments
