@@ -53,8 +53,6 @@ This project is alpha quality, and very experimental. I hope to put it into
 production eventually, but have not yet. I am open to ideas for how this
 technique could be improved. Let me know, thanks!
 
-An example that demonstrates this project is under development.
-
 The structure of this project is very closely derived from
 https://github.com/trekhleb/angular-library-seed
 
@@ -63,3 +61,5 @@ https://github.com/trekhleb/angular-library-seed
 To run the demo server, `cd demo` and `npm i` and `npm start`
 
 ## Questions, comments
+
+Let me know, here or on twitter, I'm @bkinsey808
