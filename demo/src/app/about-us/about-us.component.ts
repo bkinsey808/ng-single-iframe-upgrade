@@ -1,19 +1,27 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core'
+import { Component } from '@angular/core'
 
 @Component({
   selector: 'app-about-us',
   template: `
     <p>
-      about-us works!
+      about-us works!!
     </p>
-    Jump to <a [routerLink]="['/home']">Home</a>
+    Jump to <a [routerLink]="['/']">Home</a>
 
     `,
-  styles: [],
-  encapsulation: ViewEncapsulation.None
+  styles: [
+    `
+      :host {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        background-color: lightblue;
+      }
+    `
+  ]
 })
-export class AboutUsComponent implements OnInit {
+export class AboutUsComponent {
   constructor() {}
-
-  ngOnInit() {}
 }

@@ -1,12 +1,11 @@
 import { NgModule, ModuleWithProviders } from '@angular/core'
 import { CommonModule } from '@angular/common'
-
 import {
   LegacyRoutingService,
-  IframeMessagesService,
-  LegacyRoutingComponent,
   LegacyRoutingConfig
-} from '.'
+} from './services/legacy-routing.service'
+import { IframeMessagesService } from './services/iframe-messages.service'
+import { LegacyRoutingComponent } from './components/legacy-routing.component'
 
 @NgModule({
   imports: [CommonModule],

@@ -228,6 +228,7 @@ export class LegacyRoutingService implements OnDestroy {
   }
 
   private iframeUrlBlocked$next(url: string) {
+    console.log(url)
     const displayUrl = this.getDisplayUrl(url)
     if (this.shouldNavToBlockedUrl(displayUrl)) {
       this.router.navigateByUrl(displayUrl)

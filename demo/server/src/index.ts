@@ -9,6 +9,7 @@ app.use(
   '/ng1/',
   express.static(path.join(__dirname, '../../legacy-angularjs-project/'))
 )
+
 app.use('/', express.static(path.join(__dirname, '../../dist')))
 
 // now rewrite

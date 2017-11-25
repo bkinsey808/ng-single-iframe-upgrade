@@ -1,7 +1,7 @@
 import { Injectable, ElementRef } from '@angular/core'
 import { Observable } from 'rxjs/Observable'
 import { fromEvent } from 'rxjs/observable/fromEvent'
-import { map, filter, distinctUntilChanged } from 'rxjs/operators'
+import { map, filter, distinctUntilChanged, tap } from 'rxjs/operators'
 
 interface MessageEvent {
   data: MessageEventData
@@ -65,7 +65,9 @@ export class IframeMessagesService {
   }
 
   private getMessage$(): Observable<MessageEvent> {
-    return fromEvent(window, 'message')
+    return <Observable<MessageEvent>>fromEvent(window, 'message').pipe(
+      tap(x => console.log(x))
+    )
   }
 
   private getShowModal$(): Observable<boolean> {

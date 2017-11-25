@@ -1,22 +1,41 @@
-<!DOCTYPE html>
 <html>
 
 <head>
+  <script src="//unpkg.com/angular@1.5/angular.js"></script>
+  <script src="//unpkg.com/@uirouter/angularjs@1.0.5/release/angular-ui-router.js"></script>
+  <script src="/ng1/ui-router-title.js"></script>
+
+  <!--  Hello Galaxy Code -->
+  <script src="/ng1/app.js"></script>
+  <script src="/ng1/services/people.js"></script>
+  <script src="/ng1/services/router-service.js"></script>
+  <script src="/ng1/components/hello.js"></script>
+  <script src="/ng1/components/about.js"></script>
+  <script src="/ng1/components/people.js"></script>
+  <script src="/ng1/components/person.js"></script>
+
+  <!-- Visualizer and url -->
+  <link rel="stylesheet" href="/ng1/styles.css">
+  <script src="//unpkg.com/show-current-browser-url"></script>
+  <script src="//unpkg.com/d3@3"></script>
+  <script src="//unpkg.com/@uirouter/visualizer@4.0.2"></script>
+  <title>default</title>
   <base href="/ng1/">
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
-    crossorigin="anonymous">
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="styles/app.css">
 </head>
 
-<body ng-app="demo" ng-strict-di>
-  <!-- the app goes here -->
-  <div ui-view></div>
+<body ng-app="hello" ng-class="{'debug-sref': debug.uisref, 'debug-view': debug.uiview}">
+  <div>
+    <button onClick="document.location.reload(true)">reload plunker</button>
+    <button ng-click="debug.uiview = !debug.uiview">{{ debug.uiview ? "disable" : "enable"}} ui-view debug</button>
+    <button ng-click="debug.uisref = !debug.uisref">{{ debug.uisref ? "disable" : "enable"}} ui-sref debug</button>
+  </div>
+  <div class="nav">
+    <a ui-sref="hello" ui-sref-active="active">Hello</a>
+    <a ui-sref="about" ui-sref-active="active">About</a>
+    <a ui-sref="people" ui-sref-active="active">People</a>
+  </div>
 
-  <script src="//cdn.polyfill.io/v2/polyfill.min.js?features=default,Array.prototype.find,MutationObserver"></script>
-  <script src="_bundles/vendor.js"></script>
-  <script src="_bundles/sampleapp.js"></script>
+  <ui-view></ui-view>
 </body>
 
 </html>
